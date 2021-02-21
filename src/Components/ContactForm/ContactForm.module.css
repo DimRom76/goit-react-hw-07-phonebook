@@ -1,0 +1,17 @@
+.form {
+  border: solid 1px black;
+}
+
+.form_field {
+  margin-top: 5px;
+  margin-bottom: 5px;
+  margin-left: 10px;
+}
+
+.form_label {
+  display: block;
+}
+
+.error_message {
+  color: red;
+}
