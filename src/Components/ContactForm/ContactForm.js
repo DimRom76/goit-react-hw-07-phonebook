@@ -1,4 +1,4 @@
-import { Formik, Field, Form } from 'formik';
+import { Formik, Form, useField } from 'formik';
 import * as Yup from 'yup';
 import PropTypes from 'prop-types';
 import s from './ContactForm.module.css';
@@ -7,9 +7,42 @@ import { connect } from 'react-redux';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
-import contactsAction from '../../redux/contacts/contacts-actions';
+import contactsOperation from '../../redux/contacts/contacts-operation';
 
-function ContactForm({ onSubmit, contacts }) {
+const MyTextArea = ({ label, ...props }) => {
+  const [field] = useField(props);
+  return (
+    <div className={s.form_field}>
+      <label htmlFor={props.id || props.name} className={s.form_label}>
+        {label}
+      </label>
+      <textarea className="text-area" {...field} {...props} />
+    </div>
+  );
+};
+
+const MyTextInput = ({ label, ...props }) => {
+  const [field, meta] = useField(props);
+  return (
+    <div className={s.form_field}>
+      <label htmlFor={props.id || props.name} className={s.form_label}>
+        {label}
+      </label>
+      <input className="text-input" {...field} {...props} />
+      {meta.touched && meta.error ? (
+        <div className={s.error_message}>{meta.error}</div>
+      ) : null}
+    </div>
+  );
+};
+
+function ContactForm({
+  onSave,
+  onSubmitNew,
+  onChangeContact,
+  contacts,
+  editContact,
+}) {
   let schema = Yup.object().shape({
     name: Yup.string()
       .min(2, 'Too Short!')
@@ -18,75 +51,75 @@ function ContactForm({ onSubmit, contacts }) {
     number: Yup.string().length(9, 'Wrong length!').required('Requerid'),
   });
 
+  let { idContact, name, number, description } = editContact;
+  if (idContact === undefined) {
+    name = '';
+    number = '';
+    description = '';
+  }
+
   return (
     <>
       <Formik
-        initialValues={{ name: '', number: '' }}
+        initialValues={{ name, number, description }}
         validationSchema={schema}
         onSubmit={(values, { setSubmitting, resetForm }) => {
           //форма в режиме отправляется, кнопка неактивная пока не отменим
           //нужно если бросам запрос на сервер например
           setSubmitting(false);
 
-          const findEl = contacts.find(
-            ({ name, number }) =>
-              name.toLowerCase() === values.name.toLowerCase() ||
-              number === values.number,
-          );
+          if (idContact === undefined) {
+            const findEl = contacts.find(
+              ({ name, number }) =>
+                name.toLowerCase() === values.name.toLowerCase() ||
+                number === values.number,
+            );
 
-          if (findEl) {
-            toast.warn('Введенное имя или номер уже есть в справочнике!');
-            return;
+            if (findEl) {
+              toast.warn('Введенное имя или номер уже есть в справочнике!');
+              return;
+            }
+
+            onSubmitNew(values);
+          } else {
+            onChangeContact({ ...values, id: idContact });
           }
-
-          onSubmit(values);
+          onSave();
 
           //очищаем форму к начальным значениям
           resetForm();
         }}
       >
-        {({ isSubmitting, errors, touched }) => (
+        {({ isSubmitting }) => (
           <Form className={s.form}>
-            <div className={s.form_field}>
-              <label
-                htmlFor="name
-                  "
-                className={s.form_label}
-              >
-                Name
-              </label>
-              <Field
-                className="form_input"
-                name="name"
-                placeholder="Input name..."
-              />
-              {errors.name && touched.name ? (
-                <div className={s.error_message}>{errors.name}</div>
-              ) : null}
-            </div>
+            <MyTextInput
+              label="Имя контакта"
+              name="name"
+              type="text"
+              placeholder="Введите имя..."
+            />
 
-            <div className={s.form_field}>
-              <label htmlFor="number" className={s.form_label}>
-                Number
-              </label>
-              <Field
-                className="form_input"
-                type="tel"
-                name="number"
-                pattern="[0-9]{3}-[0-9]{2}-[0-9]{2}"
-                placeholder="555-55-55"
-              />
-              {errors.number && touched.number ? (
-                <div className={s.error_message}>{errors.number}</div>
-              ) : null}
-            </div>
+            <MyTextInput
+              label="Номер контакта"
+              name="number"
+              type="tel"
+              pattern="[0-9]{3}-[0-9]{2}-[0-9]{2}"
+              placeholder="555-55-55"
+            />
+
+            <MyTextArea
+              label="Описание"
+              name="description"
+              rows="6"
+              placeholder="Описание контакта..."
+            />
 
             <button
               type="submit"
               disabled={isSubmitting}
               className={s.form_field}
             >
-              Add contact
+              {idContact === undefined ? 'Новый контакт' : 'Редактировать'}
             </button>
           </Form>
         )}
@@ -97,7 +130,8 @@ function ContactForm({ onSubmit, contacts }) {
 }
 
 ContactForm.propTypes = {
-  onSubmit: PropTypes.func.isRequired,
+  onSubmitNew: PropTypes.func.isRequired,
+  onChangeContact: PropTypes.func.isRequired,
   contacts: PropTypes.array.isRequired,
 };
 
@@ -106,7 +140,8 @@ const mapStateToProps = ({ contacts }) => ({
 });
 
 const mapDispatchToProps = dispatch => ({
-  onSubmit: value => dispatch(contactsAction.addContacts(value)),
+  onSubmitNew: value => dispatch(contactsOperation.addContact(value)),
+  onChangeContact: value => dispatch(contactsOperation.editContact(value)),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(ContactForm);

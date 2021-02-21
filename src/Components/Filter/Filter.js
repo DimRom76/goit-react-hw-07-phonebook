@@ -1,13 +1,14 @@
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import contactsAction from '../../redux/contacts/contacts-actions';
+import { changeFilter } from '../../redux/contacts/contacts-actions';
+import s from './filter.module.css';
 
 function Filter({ value, onChange }) {
   return (
     <>
-      <h3>Find contacts by name</h3>
+      <h3>Поиск по имени</h3>
       <input
-        className="form_input"
+        className={s.form_input}
         type="text"
         name="filter"
         value={value}
@@ -27,7 +28,7 @@ const mapStateToProps = state => ({
 });
 
 const mapDispatchToProps = dispatch => ({
-  onChange: e => dispatch(contactsAction.changeFilter(e.target.value)),
+  onChange: e => dispatch(changeFilter(e.target.value)),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(Filter);

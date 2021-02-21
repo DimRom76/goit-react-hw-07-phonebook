@@ -1,90 +1,11 @@
-.App {
-  text-align: center;
-}
-
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
-}
-
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
-}
-
-.App-link {
-  color: #61dafb;
-}
-
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
-}
-
 .container {
-  width: 400px;
-  margin: 15px;
+  margin: auto;
+  text-align: center;
+  width: 600px;
+  margin-bottom: 15px;
 }
 
 .form_input:focus {
   border: 1px solid #39c;
   outline: none;
-}
-
-.older {
-  list-style: none;
-  margin: 0 auto;
-  width: auto;
-  counter-reset: li;
-}
-.older li {
-  border-top: dashed 1px #006699;
-  margin-top: 10px;
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.3), 0 0 40px rgba(0, 0, 0, 0.1) inset;
-  padding: 5px;
-}
-.older p {
-  text-decoration: none;
-  padding: 10px;
-  display: block;
-  line-height: 30px;
-  color: #3a3a3a;
-  font-family: 'EB Garamond', serif;
-  font-size: 20px;
-}
-.older p:before {
-  display: inline-block;
-  content: counter(li);
-  counter-increment: li;
-  height: 30px;
-  width: 30px;
-  text-align: center;
-  border: solid 1px #dedede;
-  margin-right: 20px;
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.3), 0 0 30px rgba(0, 0, 0, 0.1) inset;
-  font-family: 'Fredericka the Great', cursive;
-  font-size: 24px;
-  -webkit-transition: 0.4s linear;
-  transition: 0.4s linear;
-}
-.older p:hover:before {
-  color: #d72f2c;
-  -webkit-transform: scale(1.1);
-  transform: scale(1.1);
 }

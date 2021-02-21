@@ -1,19 +1,71 @@
+import { Component } from 'react';
+import { connect } from 'react-redux';
 import './App.css';
-import ContactForm from './Components/ContactForm';
 import ContactList from './Components/ContactList';
-import Filter from './Components/Filter';
+import ContactForm from './Components/ContactForm';
+import Mainbar from './Components/Mainbar';
+import Modal from './Components/Modal';
+import contactsOperation from './redux/contacts/contacts-operation';
 
-function App() {
-  return (
-    <div className="container">
-      <h1>Phonebook</h1>
-      <ContactForm />
+class App extends Component {
+  state = {
+    showModal: false,
+    editContact: {},
+  };
 
-      <h2>Contacts</h2>
-      <Filter />
-      <ContactList />
-    </div>
-  );
+  componentDidMount() {
+    this.props.fetchContacts();
+  }
+
+  toggleModal = () => {
+    this.setState(prevState => ({
+      ...prevState,
+      showModal: !prevState.showModal,
+      editContact: {},
+    }));
+  };
+
+  setEditContact = editContact => {
+    this.setState(prevState => ({
+      ...prevState,
+      showModal: !prevState.showModal,
+      editContact,
+    }));
+  };
+
+  render() {
+    const { showModal, editContact } = this.state;
+
+    return (
+      <div className="container">
+        {this.props.isContactsLoading && (
+          <Modal>
+            <h1>Обработка данных...</h1>
+          </Modal>
+        )}
+
+        <Mainbar onClick={this.toggleModal} />
+
+        <h1>Phonebook</h1>
+
+        <ContactList onEditContact={this.setEditContact} />
+
+        {showModal && (
+          <Modal onClose={this.toggleModal}>
+            <ContactForm onSave={this.toggleModal} editContact={editContact} />
+          </Modal>
+        )}
+      </div>
+    );
+  }
 }
 
-export default App;
+const mapStateToProps = state => ({
+  isContactsLoading: state.contacts.loading,
+});
+
+const mapDispatchToProps = dispatch => ({
+  fetchContacts: () => dispatch(contactsOperation.fetchContacts()),
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(App);
