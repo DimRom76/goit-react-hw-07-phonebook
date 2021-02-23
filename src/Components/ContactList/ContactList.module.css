@@ -9,10 +9,12 @@ li {
   border-radius: 10px;
   margin-left: 5px;
   color: #006699;
+  transition: 0.4s linear;
 }
 
 .button_list:hover {
   color: #043249;
+  transform: scale(1.1);
 }
 
 .buttom_group {

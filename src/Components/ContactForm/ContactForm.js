@@ -7,7 +7,7 @@ import { connect } from 'react-redux';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
-import contactsOperation from '../../redux/contacts/contacts-operation';
+import { contactsOperation, contactsSelectors } from '../../redux/contacts';
 
 const MyTextArea = ({ label, ...props }) => {
   const [field] = useField(props);
@@ -135,8 +135,8 @@ ContactForm.propTypes = {
   contacts: PropTypes.array.isRequired,
 };
 
-const mapStateToProps = ({ contacts }) => ({
-  contacts: contacts.items,
+const mapStateToProps = state => ({
+  contacts: contactsSelectors.getAllContacts(state),
 });
 
 const mapDispatchToProps = dispatch => ({

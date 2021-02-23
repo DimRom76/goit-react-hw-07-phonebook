@@ -3,7 +3,9 @@ import EditIcon from '@material-ui/icons/Edit';
 import DeleteIcon from '@material-ui/icons/Delete';
 
 import PropTypes from 'prop-types';
-import contactsOperation from '../../redux/contacts/contacts-operation';
+
+import { contactsOperation, contactsSelectors } from '../../redux/contacts';
+
 import s from './ContactList.module.css';
 
 function ContactList({ contacts, onDeleteContact, onEditContact }) {
@@ -45,17 +47,8 @@ ContactList.propTypes = {
   onDeleteContact: PropTypes.func.isRequired,
 };
 
-const getVisibleContacts = (allContacts, filter) => {
-  const normalizedFilter = filter.toLowerCase();
-
-  return allContacts.filter(el => {
-    const foundPos = el.name.toLowerCase().indexOf(normalizedFilter);
-    return foundPos === -1 ? false : true;
-  });
-};
-
-const mapStateToProps = ({ contacts: { items, filter } }) => ({
-  contacts: getVisibleContacts(items, filter),
+const mapStateToProps = state => ({
+  contacts: contactsSelectors.getVisibleContacts(state),
 });
 
 const mapDispatchToProps = dispatch => ({
