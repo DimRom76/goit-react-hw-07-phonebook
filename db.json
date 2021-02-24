@@ -1,7 +1,7 @@
 {
   "contacts": [
     {
-      "name": "Dima",
+      "name": "DimaK",
       "number": "155-55-55",
       "desription": "kjhn",
       "id": "8krqHaL",
@@ -19,6 +19,18 @@
       "number": "456-85-78",
       "description": "fhjdsahklj jasdflkjh\n\n",
       "id": "VsEjV2d"
+    },
+    {
+      "name": "Lena",
+      "number": "123-54-89",
+      "description": "sda",
+      "id": "_vJDOve"
+    },
+    {
+      "name": "Dima",
+      "number": "121-55-99",
+      "description": "",
+      "id": "pgcuT32"
     }
   ]
 }

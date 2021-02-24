@@ -43,6 +43,24 @@ function ContactForm({
   contacts,
   editContact,
 }) {
+  function handleSubmit(values, { setSubmitting, resetForm }) {
+    setSubmitting(false);
+    const findEl = contacts.find(
+      ({ name, number, id }) =>
+        name.toLowerCase() === values.name.toLowerCase() ||
+        (number === values.number && id !== idContact),
+    );
+    if (findEl) {
+      toast.warn('Введенное имя или номер уже есть в справочнике!');
+    } else {
+      idContact
+        ? onChangeContact({ ...values, id: idContact })
+        : onSubmitNew(values);
+      onSave();
+      resetForm();
+    }
+  }
+
   let schema = Yup.object().shape({
     name: Yup.string()
       .min(2, 'Too Short!')
@@ -52,7 +70,7 @@ function ContactForm({
   });
 
   let { idContact, name, number, description } = editContact;
-  if (idContact === undefined) {
+  if (!idContact) {
     name = '';
     number = '';
     description = '';
@@ -63,32 +81,7 @@ function ContactForm({
       <Formik
         initialValues={{ name, number, description }}
         validationSchema={schema}
-        onSubmit={(values, { setSubmitting, resetForm }) => {
-          //форма в режиме отправляется, кнопка неактивная пока не отменим
-          //нужно если бросам запрос на сервер например
-          setSubmitting(false);
-
-          if (idContact === undefined) {
-            const findEl = contacts.find(
-              ({ name, number }) =>
-                name.toLowerCase() === values.name.toLowerCase() ||
-                number === values.number,
-            );
-
-            if (findEl) {
-              toast.warn('Введенное имя или номер уже есть в справочнике!');
-              return;
-            }
-
-            onSubmitNew(values);
-          } else {
-            onChangeContact({ ...values, id: idContact });
-          }
-          onSave();
-
-          //очищаем форму к начальным значениям
-          resetForm();
-        }}
+        onSubmit={handleSubmit}
       >
         {({ isSubmitting }) => (
           <Form className={s.form}>
@@ -119,7 +112,7 @@ function ContactForm({
               disabled={isSubmitting}
               className={s.form_field}
             >
-              {idContact === undefined ? 'Новый контакт' : 'Редактировать'}
+              {idContact ? 'Редактировать' : 'Новый контакт'}
             </button>
           </Form>
         )}
