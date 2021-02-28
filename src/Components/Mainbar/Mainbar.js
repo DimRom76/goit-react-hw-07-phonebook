@@ -4,12 +4,12 @@ import s from './Mainbar.module.css';
 
 function Mainbar({ onClick }) {
   return (
-    <header className={s.Mainbar}>
+    <div>
       <Filter />
       <button className={s.addBtn} type="button" onClick={onClick}>
         <AddIcon />
       </button>
-    </header>
+    </div>
   );
 }
 

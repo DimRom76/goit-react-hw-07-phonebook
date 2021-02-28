@@ -1,0 +1,15 @@
+.mainLink {
+  display: 'inline-block';
+  text-decoration: 'none';
+  color: white;
+  margin-left: 20px;
+}
+
+.mainLinkActive {
+  color: blueviolet;
+}
+
+.mainNav {
+  display: flex;
+  justify-content: space-between;
+}

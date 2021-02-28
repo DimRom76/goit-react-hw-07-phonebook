@@ -1,72 +1,45 @@
+import { Route, Switch } from 'react-router-dom';
 import { Component } from 'react';
+import { Container } from '@material-ui/core';
 import { connect } from 'react-redux';
-import './App.css';
-import ContactList from './Components/ContactList';
-import ContactForm from './Components/ContactForm';
-import Mainbar from './Components/Mainbar';
-import Modal from './Components/Modal';
 
-import { contactsOperation, contactsSelectors } from './redux/contacts';
+import './App.css';
+
+import { authOperations } from './redux/auth/';
+
+import Navigation from './Components/Navigation';
+import routes from './routes';
+
+import HomeView from './views/HomeView';
+import ContactsView from './views/ContactsView';
+import LoginView from './views/LoginView';
+import RegistrationView from './views/RegistrationView';
+
+import './App.css';
 
 class App extends Component {
-  state = {
-    showModal: false,
-    editContact: {},
-  };
-
   componentDidMount() {
-    this.props.fetchContacts();
+    this.props.onGetCurretnUser();
   }
 
-  toggleModal = () => {
-    this.setState(prevState => ({
-      ...prevState,
-      showModal: !prevState.showModal,
-      editContact: {},
-    }));
-  };
-
-  setEditContact = editContact => {
-    this.setState(prevState => ({
-      ...prevState,
-      showModal: !prevState.showModal,
-      editContact,
-    }));
-  };
-
   render() {
-    const { showModal, editContact } = this.state;
-
     return (
-      <div className="container">
-        {this.props.isContactsLoading && (
-          <Modal>
-            <h1>Обработка данных...</h1>
-          </Modal>
-        )}
-
-        <Mainbar onClick={this.toggleModal} />
-
-        <h1>Phonebook</h1>
-
-        <ContactList onEditContact={this.setEditContact} />
-
-        {showModal && (
-          <Modal onClose={this.toggleModal}>
-            <ContactForm onSave={this.toggleModal} editContact={editContact} />
-          </Modal>
-        )}
-      </div>
+      <Container maxWidth="md">
+        <Navigation />
+        <Switch>
+          <Route path={routes.home} component={HomeView} exact />
+          <Route path={routes.register} component={RegistrationView} />
+          <Route path={routes.login} component={LoginView} />
+          <Route path={routes.contacts} component={ContactsView} />
+          <Route render={() => <h1>Page not found</h1>} />
+        </Switch>
+      </Container>
     );
   }
 }
 
-const mapStateToProps = state => ({
-  isContactsLoading: contactsSelectors.getLoading(state),
-});
+const mapDispatchToProps = {
+  onGetCurretnUser: authOperations.getCurrentUser,
+};
 
-const mapDispatchToProps = dispatch => ({
-  fetchContacts: () => dispatch(contactsOperation.fetchContacts()),
-});
-
-export default connect(mapStateToProps, mapDispatchToProps)(App);
+export default connect(null, mapDispatchToProps)(App);

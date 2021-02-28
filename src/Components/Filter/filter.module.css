@@ -1,3 +1,19 @@
 .form_input {
   margin-left: 10px;
 }
+
+.root {
+  padding: '2px 4px';
+  display: 'flex';
+  align-items: 'center';
+  width: 260px;
+}
+
+.input {
+  margin-left: 10px;
+  flex: 1;
+}
+
+.iconButton {
+  padding: 10px;
+}
