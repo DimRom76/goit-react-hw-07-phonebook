@@ -1,4 +1,5 @@
 import React from 'react';
+import { connect } from 'react-redux';
 
 import { useFormik } from 'formik';
 import * as yup from 'yup';
@@ -10,6 +11,7 @@ import EmailIcon from '@material-ui/icons/Email';
 import { Button, Paper, TextField } from '@material-ui/core';
 
 import PasswordForm from './PasswordForm';
+import { authOperations } from '../redux/auth';
 import s from './RegistrationView.module.css';
 
 const validationSchema = yup.object({
@@ -23,15 +25,16 @@ const validationSchema = yup.object({
     .required('Email is required'),
   password: yup
     .string('Enter your password')
-    .min(6, 'Password should be of minimum 6 characters length')
+    .min(6, 'Password should be of minimum 7 characters length')
     .required('Password is required'),
   confirmPassword: yup
     .string('Enter your password')
     .required('Confirm your password')
+    .min(6, 'Password should be of minimum 7 characters length')
     .oneOf([yup.ref('password')], 'Password does not match'),
 });
 
-function RegistrationView() {
+function RegistrationView({ registrationUser }) {
   const formik = useFormik({
     initialValues: {
       name: '',
@@ -40,16 +43,40 @@ function RegistrationView() {
       confirmPassword: '',
     },
     validationSchema: validationSchema,
-    onSubmit: values => {
-      alert(JSON.stringify(values, null, 2));
+    onSubmit: (values, { resetForm }) => {
+      onSubmitForm(values, resetForm);
     },
   });
 
-  // passwordMatch = () => this.state.password === this.state.passwordConfrim;
+  function onSubmitForm(values, resetForm) {
+    const newUserCredentials = {
+      name: values.name,
+      email: values.email,
+      password: values.password,
+    };
+    registrationUser(newUserCredentials);
+    resetForm();
+  }
+
+  function isValid() {
+    if (formik.values.name === '') {
+      return false;
+    }
+    if (formik.values.email === '') {
+      return false;
+    }
+    if (formik.values.password === '') {
+      return false;
+    }
+    if (formik.values.passwordConfrim === '') {
+      return false;
+    }
+    return true;
+  }
 
   return (
     <div className={s.main}>
-      <Paper className={s.paper}>
+      <Paper className="paper">
         <h2>Регистрация пользователя</h2>
         <form className={s.form} onSubmit={formik.handleSubmit}>
           <TextField
@@ -91,20 +118,20 @@ function RegistrationView() {
             }}
           />
           <PasswordForm
-            formik={formik}
             key="password"
-            id="password"
             name="password"
             label="Password"
+            handleChange={formik.handleChange}
+            value={formik.values.password}
             error={formik.touched.password && Boolean(formik.errors.password)}
             helperText={formik.touched.password && formik.errors.password}
           />
           <PasswordForm
-            formik={formik}
             key="confirmPassword"
-            id="confirmPassword"
             name="confirmPassword"
             label="Confirm password"
+            handleChange={formik.handleChange}
+            value={formik.values.confirmPassword}
             error={
               formik.touched.confirmPassword &&
               Boolean(formik.errors.confirmPassword)
@@ -115,6 +142,7 @@ function RegistrationView() {
           />
           <Button
             disableRipple
+            disabled={!isValid()}
             variant="outlined"
             className={s.button}
             style={{ marginTop: 10 }}
@@ -128,4 +156,8 @@ function RegistrationView() {
   );
 }
 
-export default RegistrationView;
+const mapDispatchToProps = {
+  registrationUser: authOperations.registrationUser,
+};
+
+export default connect(null, mapDispatchToProps)(RegistrationView);

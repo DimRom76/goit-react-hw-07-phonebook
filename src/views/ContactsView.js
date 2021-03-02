@@ -1,6 +1,8 @@
 import { Component } from 'react';
 import { connect } from 'react-redux';
 
+import { Paper } from '@material-ui/core';
+
 import ContactList from '../Components/ContactList';
 import ContactForm from '../Components/ContactForm';
 import Mainbar from '../Components/Mainbar';
@@ -45,11 +47,13 @@ class ContactsView extends Component {
           </Modal>
         )}
 
-        <Mainbar onClick={this.toggleModal} />
+        <Paper className="paper">
+          <Mainbar onClick={this.toggleModal} />
 
-        <h1>Phonebook</h1>
+          <h2>Phonebook</h2>
 
-        <ContactList onEditContact={this.setEditContact} />
+          <ContactList onEditContact={this.setEditContact} />
+        </Paper>
 
         {showModal && (
           <Modal onClose={this.toggleModal}>

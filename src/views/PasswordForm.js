@@ -17,7 +17,7 @@ class PasswordForm extends Component {
 
   render() {
     const { hidePassword } = this.state;
-    const { formik, label, name, error, helperText } = this.props;
+    const { handleChange, label, name, error, helperText, value } = this.props;
 
     return (
       <TextField
@@ -27,8 +27,8 @@ class PasswordForm extends Component {
         name={name}
         label={label}
         type={hidePassword ? 'password' : 'input'}
-        value={formik.values[{ name }]}
-        onChange={formik.handleChange}
+        value={value}
+        onChange={handleChange}
         error={error}
         helperText={helperText}
         InputProps={

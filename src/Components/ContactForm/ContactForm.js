@@ -9,18 +9,6 @@ import 'react-toastify/dist/ReactToastify.css';
 
 import { contactsOperation, contactsSelectors } from '../../redux/contacts';
 
-const MyTextArea = ({ label, ...props }) => {
-  const [field] = useField(props);
-  return (
-    <div className={s.form_field}>
-      <label htmlFor={props.id || props.name} className={s.form_label}>
-        {label}
-      </label>
-      <textarea className="text-area" {...field} {...props} />
-    </div>
-  );
-};
-
 const MyTextInput = ({ label, ...props }) => {
   const [field, meta] = useField(props);
   return (
@@ -73,7 +61,6 @@ function ContactForm({
   if (!idContact) {
     name = '';
     number = '';
-    description = '';
   }
 
   return (
@@ -98,13 +85,6 @@ function ContactForm({
               type="tel"
               pattern="[0-9]{3}-[0-9]{2}-[0-9]{2}"
               placeholder="555-55-55"
-            />
-
-            <MyTextArea
-              label="Описание"
-              name="description"
-              rows="6"
-              placeholder="Описание контакта..."
             />
 
             <button

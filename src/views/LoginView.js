@@ -1,4 +1,5 @@
 import React from 'react';
+import { connect } from 'react-redux';
 
 import { useFormik } from 'formik';
 import * as yup from 'yup';
@@ -8,6 +9,7 @@ import EmailIcon from '@material-ui/icons/Email';
 
 import { Button, Paper, TextField } from '@material-ui/core';
 
+import { authOperations } from '../redux/auth';
 import PasswordForm from './PasswordForm';
 import s from './RegistrationView.module.css';
 
@@ -18,27 +20,44 @@ const validationSchema = yup.object({
     .required('Email is required'),
   password: yup
     .string('Enter your password')
-    .min(6, 'Password should be of minimum 6 characters length')
+    .min(6, 'Password should be of minimum 7 characters length')
     .required('Password is required'),
 });
 
-function RegistrationView() {
+function LoginView({ loginUser }) {
   const formik = useFormik({
     initialValues: {
       email: '',
       password: '',
     },
     validationSchema: validationSchema,
-    onSubmit: values => {
-      alert(JSON.stringify(values, null, 2));
+    onSubmit: (values, { resetForm }) => {
+      onSubmitForm(values, resetForm);
     },
   });
 
-  // passwordMatch = () => this.state.password === this.state.passwordConfrim;
+  function onSubmitForm(values, resetForm) {
+    const newUserCredentials = {
+      email: values.email,
+      password: values.password,
+    };
+    loginUser(newUserCredentials);
+    resetForm();
+  }
+
+  function isValid() {
+    if (formik.values.email === '') {
+      return false;
+    }
+    if (formik.values.password === '') {
+      return false;
+    }
+    return true;
+  }
 
   return (
     <div className={s.main}>
-      <Paper className={s.paper}>
+      <Paper className="paper">
         <h2>Логин пользователя</h2>
         <form className={s.form} onSubmit={formik.handleSubmit}>
           <TextField
@@ -61,15 +80,16 @@ function RegistrationView() {
             }}
           />
           <PasswordForm
-            formik={formik}
             key="password"
-            id="password"
             name="password"
             label="Password"
+            handleChange={formik.handleChange}
+            value={formik.values.password}
             error={formik.touched.password && Boolean(formik.errors.password)}
             helperText={formik.touched.password && formik.errors.password}
           />
           <Button
+            disabled={!isValid()}
             disableRipple
             variant="outlined"
             className={s.button}
@@ -84,4 +104,8 @@ function RegistrationView() {
   );
 }
 
-export default RegistrationView;
+const mapDispatchToProps = {
+  loginUser: authOperations.loginUser,
+};
+
+export default connect(null, mapDispatchToProps)(LoginView);

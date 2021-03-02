@@ -4,7 +4,7 @@ import s from './Mainbar.module.css';
 
 function Mainbar({ onClick }) {
   return (
-    <div>
+    <div className={s.mainBar}>
       <Filter />
       <button className={s.addBtn} type="button" onClick={onClick}>
         <AddIcon />

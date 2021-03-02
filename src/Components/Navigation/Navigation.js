@@ -22,13 +22,15 @@ function Navigation({ isAuthenticated }) {
           >
             Home
           </NavLink>
-          <NavLink
-            to={routes.contacts}
-            className={s.mainLink}
-            activeClassName={s.mainLinkActive}
-          >
-            Contacts
-          </NavLink>
+          {isAuthenticated ? (
+            <NavLink
+              to={routes.contacts}
+              className={s.mainLink}
+              activeClassName={s.mainLinkActive}
+            >
+              Contacts
+            </NavLink>
+          ) : null}
         </div>
         {isAuthenticated ? <Logout /> : <AuthNav />}
       </Toolbar>

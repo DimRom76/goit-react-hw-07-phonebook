@@ -27,6 +27,7 @@ li {
   margin: 0 auto;
   width: auto;
   counter-reset: li;
+  padding-inline-start: 0;
 }
 
 .older li {

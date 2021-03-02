@@ -42,7 +42,7 @@ const logoutUser = () => async dispatch => {
   dispatch(authActions.logoutUserRequest());
 
   try {
-    const response = await axios.post('/users/login');
+    const response = await axios.post('/users/logout');
 
     token.unset();
     dispatch(authActions.logoutUserSuccess(response.data));

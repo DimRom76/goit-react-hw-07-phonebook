@@ -6,16 +6,6 @@
   margin-right: auto;
 }
 
-.paper {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
-  padding-top: 20px;
-  padding: 20px;
-  margin-top: 20px;
-}
-
 .button {
   color: #0d0d0d;
   background: rgba(255, 255, 255, 0.45);

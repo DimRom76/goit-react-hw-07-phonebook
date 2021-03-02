@@ -1,22 +1,30 @@
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 
+import InputAdornment from '@material-ui/core/InputAdornment';
 import TextField from '@material-ui/core/TextField';
-import IconButton from '@material-ui/core/IconButton';
 import SearchIcon from '@material-ui/icons/Search';
 
 import { contactsSelectors, changeFilter } from '../../redux/contacts';
 
-import s from './filter.module.css';
+//import s from './filter.module.css';
 
 function Filter({ value, onChange }) {
   return (
-    <form className={s.root} noValidate autoComplete="off" onSubmit={onChange}>
-      <TextField id="standard-basic" label="Поиск по имени" />
-      <IconButton type="submit" className={s.iconButton} aria-label="search">
-        <SearchIcon />
-      </IconButton>
-    </form>
+    <TextField
+      id="value"
+      type="text"
+      label="Поиск по имени"
+      value={value}
+      onChange={onChange}
+      InputProps={{
+        endAdornment: (
+          <InputAdornment position="end">
+            <SearchIcon color="primary" />
+          </InputAdornment>
+        ),
+      }}
+    />
   );
 }
 

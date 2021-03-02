@@ -16,3 +16,7 @@
   color: #043249;
   transform: scale(1.1);
 }
+
+.mainBar {
+  display: flex;
+}
