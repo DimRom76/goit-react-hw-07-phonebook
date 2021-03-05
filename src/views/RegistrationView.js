@@ -34,7 +34,7 @@ const validationSchema = yup.object({
     .oneOf([yup.ref('password')], 'Password does not match'),
 });
 
-function RegistrationView({ registrationUser }) {
+function RegistrationView({ registrationUser, errorRegistration }) {
   const formik = useFormik({
     initialValues: {
       name: '',

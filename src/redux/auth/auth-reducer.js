@@ -19,33 +19,53 @@ const token = createReducer(initialToken, {
   [userAction.logoutUserSuccess]: () => initialToken,
 });
 
-const setLoadingTrue = () => true;
-const setLoadingFalse = () => false;
+const setTrue = () => true;
+const setFalse = () => false;
+
 const loading = createReducer(false, {
-  [userAction.registrationUserRequest]: setLoadingTrue,
-  [userAction.registrationUserSuccess]: setLoadingFalse,
-  [userAction.registrationUserError]: setLoadingFalse,
-  [userAction.loginUserRequest]: setLoadingTrue,
-  [userAction.loginUserSuccess]: setLoadingFalse,
-  [userAction.loginUserError]: setLoadingFalse,
-  [userAction.logoutUserRequest]: setLoadingTrue,
-  [userAction.logoutUserSuccess]: setLoadingFalse,
-  [userAction.logoutUserError]: setLoadingFalse,
-  [userAction.getCurrentUserRequest]: setLoadingTrue,
-  [userAction.getCurrentUserSuccess]: setLoadingFalse,
-  [userAction.getCurrentUserError]: setLoadingFalse,
+  [userAction.registrationUserRequest]: setTrue,
+  [userAction.registrationUserSuccess]: setFalse,
+  [userAction.registrationUserError]: setFalse,
+  [userAction.loginUserRequest]: setTrue,
+  [userAction.loginUserSuccess]: setFalse,
+  [userAction.loginUserError]: setFalse,
+  [userAction.logoutUserRequest]: setTrue,
+  [userAction.logoutUserSuccess]: setFalse,
+  [userAction.logoutUserError]: setFalse,
+  [userAction.getCurrentUserRequest]: setTrue,
+  [userAction.getCurrentUserSuccess]: setFalse,
+  [userAction.getCurrentUserError]: setFalse,
 });
 
 const setError = (_, { payload }) => payload;
 const error = createReducer(null, {
+  [userAction.registrationUserRequest]: () => '',
+  [userAction.registrationUserSuccess]: () => '',
   [userAction.registrationUserError]: setError,
+  [userAction.loginUserRequest]: () => '',
+  [userAction.loginUserSuccess]: () => '',
   [userAction.loginUserError]: setError,
+  [userAction.logoutUserRequest]: () => '',
+  [userAction.logoutUserSuccess]: () => '',
   [userAction.logoutUserError]: setError,
+  [userAction.getCurrentUserRequest]: () => '',
+  [userAction.getCurrentUserSuccess]: () => '',
   [userAction.getCurrentUserError]: setError,
+});
+
+const isAuthenticated = createReducer(false, {
+  [userAction.registrationUserSuccess]: setTrue,
+  [userAction.loginUserSuccess]: setTrue,
+  [userAction.logoutUserSuccess]: setFalse,
+  [userAction.getCurrentUserSuccess]: setTrue,
+  [userAction.registrationUserError]: setFalse,
+  [userAction.loginUserError]: setFalse,
+  [userAction.getCurrentUserError]: setFalse,
 });
 
 const userReducer = combineReducers({
   user,
+  isAuthenticated,
   token,
   loading,
   error,

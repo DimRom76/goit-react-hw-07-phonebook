@@ -15,10 +15,6 @@ function Logout({ name, logoutUser }) {
       >
         Logout
       </Button>
-
-      {/* <button type="button" onClick={logoutUser}>
-        Logout
-      </button> */}
     </div>
   );
 }

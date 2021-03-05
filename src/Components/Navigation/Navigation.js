@@ -22,7 +22,7 @@ function Navigation({ isAuthenticated }) {
           >
             Home
           </NavLink>
-          {isAuthenticated ? (
+          {isAuthenticated && (
             <NavLink
               to={routes.contacts}
               className={s.mainLink}
@@ -30,7 +30,7 @@ function Navigation({ isAuthenticated }) {
             >
               Contacts
             </NavLink>
-          ) : null}
+          )}
         </div>
         {isAuthenticated ? <Logout /> : <AuthNav />}
       </Toolbar>

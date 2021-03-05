@@ -39,6 +39,7 @@ const addContact = values => dispatch => {
 const editContact = values => dispatch => {
   dispatch(editContactRequest());
   const { id } = values;
+  delete values.id;
 
   axios
     .patch(`/contacts/${id}`, values)
