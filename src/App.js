@@ -1,97 +1,72 @@
-import { Route, Switch } from 'react-router-dom';
-import { Component, Suspense, lazy } from 'react';
-import { Container } from '@material-ui/core';
+import { Component } from 'react';
 import { connect } from 'react-redux';
-
-import { ToastContainer } from 'react-toastify';
-import { toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
-
-import { authOperations, authSelectors } from './redux/auth/';
-
-import PrivateRoute from './Components/PrivateRoute';
-import PublicRoute from './Components/PublicRoute';
-import Navigation from './Components/Navigation';
-import Modal from './Components/Modal';
-import routes from './routes';
-
 import './App.css';
+import ContactList from './Components/ContactList';
+import ContactForm from './Components/ContactForm';
+import Mainbar from './Components/Mainbar';
+import Modal from './Components/Modal';
 
-const HomeView = lazy(() =>
-  import('./views/HomeView.js' /* webpackChunkName: "home-page" */),
-);
-
-const ContactsView = lazy(() =>
-  import('./views/ContactsView.js' /* webpackChunkName: "contact-page" */),
-);
-
-const LoginView = lazy(() =>
-  import('./views/LoginView.js' /* webpackChunkName: "login-page" */),
-);
-
-const RegistrationView = lazy(() =>
-  import(
-    './views/RegistrationView.js' /* webpackChunkName: "registration-page" */
-  ),
-);
+import { contactsOperation, contactsSelectors } from './redux/contacts';
 
 class App extends Component {
+  state = {
+    showModal: false,
+    editContact: {},
+  };
+
   componentDidMount() {
-    this.props.onGetCurretnUser();
+    this.props.fetchContacts();
   }
 
-  componentDidUpdate(prevProps) {
-    const errorLogin = this.props.errorLogin;
-    if (errorLogin !== prevProps.errorLogin) {
-      errorLogin && toast.warn(`Ошибка! ${errorLogin}`);
-    }
-  }
+  toggleModal = () => {
+    this.setState(prevState => ({
+      ...prevState,
+      showModal: !prevState.showModal,
+      editContact: {},
+    }));
+  };
+
+  setEditContact = editContact => {
+    this.setState(prevState => ({
+      ...prevState,
+      showModal: !prevState.showModal,
+      editContact,
+    }));
+  };
 
   render() {
+    const { showModal, editContact } = this.state;
+
     return (
-      <Container maxWidth="md">
-        <Navigation />
-        <Suspense fallback={<p>Loading...</p>}>
-          <Switch>
-            <Route path={routes.home} component={HomeView} exact />
-            <PublicRoute
-              path={routes.register}
-              restricted
-              component={RegistrationView}
-              redirectTo={routes.contacts}
-            />
-            <PublicRoute
-              path={routes.login}
-              restricted
-              component={LoginView}
-              redirectTo={routes.contacts}
-            />
-            <PrivateRoute
-              path={routes.contacts}
-              component={ContactsView}
-              redirectTo={routes.login}
-            />
-            <Route render={() => <h1>Page not found</h1>} />
-          </Switch>
-        </Suspense>
-        <ToastContainer />
-        {this.props.isAuthLoading && (
+      <div className="container">
+        {this.props.isContactsLoading && (
           <Modal>
-            <h1>Авторизация...</h1>
+            <h1>Обработка данных...</h1>
           </Modal>
         )}
-      </Container>
+
+        <Mainbar onClick={this.toggleModal} />
+
+        <h1>Phonebook</h1>
+
+        <ContactList onEditContact={this.setEditContact} />
+
+        {showModal && (
+          <Modal onClose={this.toggleModal}>
+            <ContactForm onSave={this.toggleModal} editContact={editContact} />
+          </Modal>
+        )}
+      </div>
     );
   }
 }
 
 const mapStateToProps = state => ({
-  errorLogin: authSelectors.getError(state),
-  isAuthLoading: authSelectors.getLoading(state),
+  isContactsLoading: contactsSelectors.getLoading(state),
 });
 
-const mapDispatchToProps = {
-  onGetCurretnUser: authOperations.getCurrentUser,
-};
+const mapDispatchToProps = dispatch => ({
+  fetchContacts: () => dispatch(contactsOperation.fetchContacts()),
+});
 
 export default connect(mapStateToProps, mapDispatchToProps)(App);

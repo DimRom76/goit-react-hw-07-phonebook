@@ -1,21 +1,40 @@
-import { useFormik } from 'formik';
-
+import { Formik, Form, useField } from 'formik';
 import * as Yup from 'yup';
 import PropTypes from 'prop-types';
 import s from './ContactForm.module.css';
 import { connect } from 'react-redux';
 
-import InputAdornment from '@material-ui/core/InputAdornment';
-import NameIcon from '@material-ui/icons/SupervisorAccount';
-import PhoneIcon from '@material-ui/icons/Phone';
-import { Button, TextField } from '@material-ui/core';
-
-import InputMask from 'react-input-mask';
-
-import { toast } from 'react-toastify';
+import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 import { contactsOperation, contactsSelectors } from '../../redux/contacts';
+
+const MyTextArea = ({ label, ...props }) => {
+  const [field] = useField(props);
+  return (
+    <div className={s.form_field}>
+      <label htmlFor={props.id || props.name} className={s.form_label}>
+        {label}
+      </label>
+      <textarea className="text-area" {...field} {...props} />
+    </div>
+  );
+};
+
+const MyTextInput = ({ label, ...props }) => {
+  const [field, meta] = useField(props);
+  return (
+    <div className={s.form_field}>
+      <label htmlFor={props.id || props.name} className={s.form_label}>
+        {label}
+      </label>
+      <input className="text-input" {...field} {...props} />
+      {meta.touched && meta.error ? (
+        <div className={s.error_message}>{meta.error}</div>
+      ) : null}
+    </div>
+  );
+};
 
 function ContactForm({
   onSave,
@@ -24,129 +43,82 @@ function ContactForm({
   contacts,
   editContact,
 }) {
-  function onSubmitForm(values, setSubmitting, resetForm) {
+  function handleSubmit(values, { setSubmitting, resetForm }) {
     setSubmitting(false);
     const findEl = contacts.find(
       ({ name, number, id }) =>
-        (name.toLowerCase() === values.name.toLowerCase() ||
-          number === values.number) &&
-        id !== idContact,
+        name.toLowerCase() === values.name.toLowerCase() ||
+        (number === values.number && id !== idContact),
     );
     if (findEl) {
-      toast.warn(
-        `Запись уже есть в базе. Имя:${findEl.name}, номер:${findEl.number}`,
-      );
-      return;
+      toast.warn('Введенное имя или номер уже есть в справочнике!');
+    } else {
+      idContact
+        ? onChangeContact({ ...values, id: idContact })
+        : onSubmitNew(values);
+      onSave();
+      resetForm();
     }
-
-    idContact
-      ? onChangeContact({ ...values, id: idContact })
-      : onSubmitNew(values);
-    onSave();
-    resetForm();
   }
 
-  const validationSchema = Yup.object().shape({
+  let schema = Yup.object().shape({
     name: Yup.string()
       .min(2, 'Too Short!')
       .max(25, 'Too Long!')
       .required('Requerid'),
-    number: Yup.string().length(19, 'Wrong length!').required('Requerid'),
+    number: Yup.string().length(9, 'Wrong length!').required('Requerid'),
   });
 
-  let { idContact, name, number } = editContact;
+  let { idContact, name, number, description } = editContact;
   if (!idContact) {
     name = '';
     number = '';
-  }
-
-  const formik = useFormik({
-    initialValues: {
-      name,
-      number,
-    },
-    validationSchema: validationSchema,
-    onSubmit: (values, { resetForm, setSubmitting }) => {
-      onSubmitForm(values, resetForm, setSubmitting);
-    },
-  });
-
-  function isValid() {
-    if (formik.values.name === '') {
-      return false;
-    }
-    if (formik.values.number === '') {
-      return false;
-    }
-
-    return true;
+    description = '';
   }
 
   return (
-    <div>
-      <form className={s.form} onSubmit={formik.handleSubmit}>
-        <TextField
-          fullWidth
-          id="name"
-          style={{ marginTop: 10 }}
-          name="name"
-          label="Name"
-          value={formik.values.name}
-          onChange={formik.handleChange}
-          error={formik.touched.name && Boolean(formik.errors.name)}
-          helperText={formik.touched.name && formik.errors.name}
-          className={s.inputs}
-          InputProps={{
-            startAdornment: (
-              <InputAdornment position="start">
-                <NameIcon color="primary" />
-              </InputAdornment>
-            ),
-          }}
-        />
-        <InputMask
-          mask="+38 (999) 999 99 99"
-          maskChar=""
-          value={formik.values.number}
-          onChange={formik.handleChange}
-          id="number"
-          name="number"
-          error={formik.touched.number && Boolean(formik.errors.number)}
-          helperText={formik.touched.number && formik.errors.number}
-        >
-          {props => {
-            return (
-              <TextField
-                {...props}
-                fullWidth
-                style={{ marginTop: 10 }}
-                label="Phone"
-                type="tel"
-                className={s.inputs}
-                InputProps={{
-                  startAdornment: (
-                    <InputAdornment position="start">
-                      <PhoneIcon color="primary" />
-                    </InputAdornment>
-                  ),
-                }}
-              />
-            );
-          }}
-        </InputMask>
+    <>
+      <Formik
+        initialValues={{ name, number, description }}
+        validationSchema={schema}
+        onSubmit={handleSubmit}
+      >
+        {({ isSubmitting }) => (
+          <Form className={s.form}>
+            <MyTextInput
+              label="Имя контакта"
+              name="name"
+              type="text"
+              placeholder="Введите имя..."
+            />
 
-        <Button
-          disableRipple
-          disabled={!isValid()}
-          variant="outlined"
-          className={s.button}
-          style={{ marginTop: 10 }}
-          type="submit"
-        >
-          {idContact ? 'Редактировать' : 'Новый контакт'}
-        </Button>
-      </form>
-    </div>
+            <MyTextInput
+              label="Номер контакта"
+              name="number"
+              type="tel"
+              pattern="[0-9]{3}-[0-9]{2}-[0-9]{2}"
+              placeholder="555-55-55"
+            />
+
+            <MyTextArea
+              label="Описание"
+              name="description"
+              rows="6"
+              placeholder="Описание контакта..."
+            />
+
+            <button
+              type="submit"
+              disabled={isSubmitting}
+              className={s.form_field}
+            >
+              {idContact ? 'Редактировать' : 'Новый контакт'}
+            </button>
+          </Form>
+        )}
+      </Formik>
+      <ToastContainer />
+    </>
   );
 }
 

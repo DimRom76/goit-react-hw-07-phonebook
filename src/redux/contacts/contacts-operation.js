@@ -14,7 +14,7 @@ import {
   deleteContactError,
 } from './contacts-actions';
 
-//axios.defaults.baseURL = 'http://localhost:4040';
+axios.defaults.baseURL = 'http://localhost:4040';
 
 const fetchContacts = () => dispatch => {
   dispatch(fetchContactsRequest());
@@ -39,7 +39,6 @@ const addContact = values => dispatch => {
 const editContact = values => dispatch => {
   dispatch(editContactRequest());
   const { id } = values;
-  delete values.id;
 
   axios
     .patch(`/contacts/${id}`, values)

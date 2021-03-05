@@ -11,17 +11,20 @@ import s from './ContactList.module.css';
 function ContactList({ contacts, onDeleteContact, onEditContact }) {
   return (
     <ul className={s.older}>
-      {contacts.map(({ id, name, number }) => {
+      {contacts.map(({ id, name, number, description }) => {
         return (
           <li key={id}>
             <div className="contact_container">
               <p>Имя: {name}</p>
               <p>Номер: {number}</p>
+              <p>Описание: {description}</p>
             </div>
             <div className={s.buttom_group}>
               <button
                 className={s.button_list}
-                onClick={() => onEditContact({ idContact: id, name, number })}
+                onClick={() =>
+                  onEditContact({ idContact: id, name, number, description })
+                }
               >
                 <EditIcon />
               </button>
